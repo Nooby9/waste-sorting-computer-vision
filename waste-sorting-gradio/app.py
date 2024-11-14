@@ -7,12 +7,7 @@ def object_detection(image):
     return "plastic"  # Example return value
 
 
-# Scoring logic
-score = 0
-
-
-def evaluate_choice(image, chosen_bin):
-    global score
+def evaluate_choice(image, chosen_bin, score):
     label = object_detection(image)
 
     # Define correct bins for each label
@@ -33,11 +28,13 @@ def evaluate_choice(image, chosen_bin):
     else:
         result = f"Unknown item: {label}. Your score: {score}"
 
-    return result
+    return result, score  # Return the updated score
 
 
 with gr.Blocks() as demo:
-    global score
+    # Initializing the score
+    score_state = gr.State(value=0)
+
     with gr.Row():
         with gr.Column(scale=1, min_width=300):
             img_input = gr.Image(type="numpy", label="Upload or Take a Picture")
@@ -52,7 +49,8 @@ with gr.Blocks() as demo:
         output_text = gr.Textbox(label="Result", elem_id="result-output")
 
     classify_button.click(fn=object_detection, inputs=img_input, outputs=output_text)
-    submit_button.click(fn=evaluate_choice, inputs=[img_input, bins_choice], outputs=output_text)
+    submit_button.click(fn=evaluate_choice, inputs=[img_input, bins_choice, score_state],
+                        outputs=[output_text, score_state])  # Update score_state in-place
 
     demo.css = """
     #result-output {
