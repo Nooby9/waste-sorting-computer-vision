@@ -6,7 +6,7 @@ import os
 
 # Load the YOLO model
 # model = YOLO("yolo11_waste_sorting\\runs\\detect\\train_res_640\\weights\\best.onnx")
-model = YOLO('../yolo11_waste_sorting/runs/detect/train_res_640/weights/best.onnx')
+model = YOLO("yolo11_waste_sorting/runs/detect/train_res_640/weights/best.onnx")
 
 # Waste categories
 waste_categories = {
@@ -116,7 +116,8 @@ def object_detection(image):
 
 
 # Gradio interface
-with gr.Blocks(css="""
+with gr.Blocks(
+    css="""
 .upload_img_element {
     max-width: 100%;
     max-height: 50%;
@@ -127,12 +128,13 @@ with gr.Blocks(css="""
     justify-content: center;
     align-items: center;
 }
-""") as demo:
+"""
+) as demo:
     detected_items_state = gr.State([])  # Keep track of detected items
 
     with gr.Row(elem_classes=["center-container"]):
         img_input = gr.Image(
-            type="numpy", label="Upload an Image", elem_classes=['upload_img_element']
+            type="numpy", label="Upload an Image", elem_classes=["upload_img_element"]
         )
 
     @gr.render(inputs=img_input)
@@ -176,7 +178,7 @@ with gr.Blocks(css="""
                     )
                 else:
                     explanation = generate_gpt_explanation(
-                        detected_item, correct_choice
+                        detected_item, correct_choice, user_choice
                     )
                     feedback.append(
                         f"❌ Wrong! '{detected_item}' is {correct_choice}, not {user_choice}.\nExplanation: {explanation}"
@@ -188,5 +190,6 @@ with gr.Blocks(css="""
             inputs=user_choices,
             outputs=[feedback_box],
         )
+
 
 demo.launch(share=True)
