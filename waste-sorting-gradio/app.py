@@ -6,7 +6,7 @@ import os
 
 # Load the YOLO model
 # model = YOLO("yolo11_waste_sorting\\runs\\detect\\train_res_640\\weights\\best.onnx")
-model = YOLO("yolo11_waste_sorting/runs/detect/train_res_640/weights/best.onnx")
+model = YOLO("best.onnx")
 
 # Waste categories
 waste_categories = {
@@ -117,7 +117,7 @@ def object_detection(image):
 
 # Gradio interface
 with gr.Blocks(
-    css="""
+        css="""
 .upload_img_element {
     max-width: 100%;
     max-height: 50%;
@@ -130,12 +130,22 @@ with gr.Blocks(
 }
 """
 ) as demo:
+    gr.Markdown(
+        """
+        # Automated Waste Sorting Application
+        Upload an image to detect and classify waste items into recyclable or non-recyclable categories. 
+        Help promote environmental sustainability through proper waste sorting!
+        You might see error because missing OPENAI api keys. Unfortunately you need to use your own key.
+        """
+    )
+
     detected_items_state = gr.State([])  # Keep track of detected items
 
     with gr.Row(elem_classes=["center-container"]):
         img_input = gr.Image(
             type="numpy", label="Upload an Image", elem_classes=["upload_img_element"]
         )
+
 
     @gr.render(inputs=img_input)
     def render_detected_items(image):
@@ -190,6 +200,5 @@ with gr.Blocks(
             inputs=user_choices,
             outputs=[feedback_box],
         )
-
 
 demo.launch(share=True)
